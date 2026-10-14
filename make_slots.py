@@ -96,11 +96,12 @@ class Space:
         self.used = []
 
     def take(self, n, name, prefer=None):
+        reserved = (n + 3) & ~3
         order = sorted(range(len(self.free)), key=lambda i: (prefer is not None and i not in prefer, i))
         for i in order:
             lo, hi = self.free[i]
-            if hi - lo >= n:
-                self.free[i][0] = lo + ((n + 3) & ~3)
+            if hi - lo >= reserved:
+                self.free[i][0] = lo + reserved
                 self.used.append((name, lo, n))
                 return lo
         raise SystemExit(f'no room for {name} ({n} B); free: {[(hex(a), b - a) for a, b in self.free]}')
